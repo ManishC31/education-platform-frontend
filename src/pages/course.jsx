@@ -218,12 +218,11 @@ By the end of this course, you'll have the skills and confidence to build profes
                   <div className="text-lg text-green-600 font-medium">Save ₹{(courseData.originalPrice - courseData.price).toFixed(2)}</div>
                 </div>
 
-                <button className="w-full bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors mb-6">
+                <button className="w-full bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors mb-4">
                   Enroll Now
                 </button>
 
-                <div className="text-center text-gray-500">
-                  <p>30-Day Money-Back Guarantee</p>
+                <div className="text-center text-gray-700 text-base">
                   <p>Full Lifetime Access</p>
                 </div>
               </div>

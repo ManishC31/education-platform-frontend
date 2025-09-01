@@ -6,7 +6,7 @@ import Courses from "./pages/Courses.jsx";
 import About from "./pages/About.jsx";
 import Contact from "./pages/Contact.jsx";
 import NotFound from "./pages/NotFound.jsx";
-import CoursePage from "./pages/course.jsx";
+import CoursePage from "./pages/Course.jsx";
 
 const App = () => {
   // Update theme on state change
