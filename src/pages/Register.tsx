@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import axios from "axios";
+import API_BASE_URL from "../config/backend";
 
 const Register: React.FC = () => {
   const [userType, setUserType] = useState<"student" | "educator">("student");
@@ -97,11 +99,21 @@ const Register: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual registration logic here
-      console.log("Registration attempt:", { userType, formData });
+      const response = await axios.post(`${API_BASE_URL}/auth/register-${userType}`, {
+        firstname: formData.firstName,
+        lastname: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        role: userType,
+        ...(userType === "educator" && {
+          contact: formData.contactNumber,
+          address: formData.address,
+          city: formData.city,
+          country: formData.country,
+        }),
+      });
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      console.log("response:", response.data);
 
       // Login user with context
       login({
@@ -118,10 +130,24 @@ const Register: React.FC = () => {
       });
 
       // Navigate to dashboard after successful registration
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       console.error("Registration failed:", error);
-      // Handle registration error (show toast notification, etc.)
+
+      // Handle axios error properly
+      if (axios.isAxiosError(error)) {
+        const errorMessage =
+          error.response?.data?.message || error.response?.data?.error || error.message || "Registration failed. Please try again.";
+
+        console.log("err message:", errorMessage);
+        // Set specific field errors if provided by the backend
+        if (error.response?.data?.errors) {
+          setErrors({ general: error.response.data.errors });
+        } else {
+          // Set a general error message
+          setErrors({ general: errorMessage });
+        }
+      }
     } finally {
       setIsLoading(false);
     }
@@ -509,6 +535,8 @@ const Register: React.FC = () => {
                   )}
                 </div>
               </div>
+
+              {errors?.general ? <p className="text-sm text-red-500 font-semibold text-center">{errors?.general}</p> : null}
 
               {/* Submit Button */}
               <button

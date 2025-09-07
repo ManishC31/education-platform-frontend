@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // pages and components
 import NavbarComponent from "./components/Navbar.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import PrivateRoute from "./components/PrivateRoutes.jsx";
 import Home from "./pages/Home.jsx";
 import Courses from "./pages/Courses.jsx";
 import About from "./pages/About.jsx";
@@ -15,10 +15,17 @@ import Register from "./pages/Register.tsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Profile from "./pages/Profile.jsx";
 import EducatorDashboard from "./pages/educators/Dashboard.jsx";
-import AdminDashboard from "./pages/admin/Dashboard.jsx";
-import EducatorCourses from "./pages/educators/Courses.jsx";
+import AdminDashboard from "./pages/admin/Dashboard.jsx"; // Assuming this component exists or needs to be created
 
-const NavbarPage = ({ children }) => (
+// Layout components
+const PublicLayout = ({ children }) => (
+  <div className="min-h-screen bg-base-100">
+    <NavbarComponent />
+    <main>{children}</main>
+  </div>
+);
+
+const PrivateLayout = ({ children }) => (
   <div className="min-h-screen bg-base-100">
     <NavbarComponent />
     <main>{children}</main>
@@ -26,7 +33,7 @@ const NavbarPage = ({ children }) => (
 );
 
 // Page without Navbar
-const WithoutNavbarPage = ({ children }) => (
+const AuthLayout = ({ children }) => (
   <div className="min-h-screen bg-base-100">
     <main>{children}</main>
   </div>
@@ -45,17 +52,17 @@ const App = () => {
         <Route
           path="/login"
           element={
-            <WithoutNavbarPage>
+            <AuthLayout>
               <Login />
-            </WithoutNavbarPage>
+            </AuthLayout>
           }
         />
         <Route
           path="/register"
           element={
-            <WithoutNavbarPage>
+            <AuthLayout>
               <Register />
-            </WithoutNavbarPage>
+            </AuthLayout>
           }
         />
 
@@ -63,115 +70,105 @@ const App = () => {
         <Route
           path="/"
           element={
-            <NavbarPage>
-              <Home />
-            </NavbarPage>
+            <PublicLayout>
+              <Home isPrivate={false} />
+            </PublicLayout>
           }
         />
         <Route
           path="/courses"
           element={
-            <NavbarPage>
+            <PublicLayout>
               <Courses />
-            </NavbarPage>
+            </PublicLayout>
           }
         />
         <Route
           path="/course/:id"
           element={
-            <ProtectedRoute allowedRoles={["student"]}>
-              <NavbarPage>
-                <CoursePage />
-              </NavbarPage>
-            </ProtectedRoute>
+            <PublicLayout>
+              <CoursePage />
+            </PublicLayout>
           }
         />
         <Route
           path="/about"
           element={
-            <NavbarPage>
+            <PublicLayout>
               <About />
-            </NavbarPage>
+            </PublicLayout>
           }
         />
         <Route
           path="/contact"
           element={
-            <NavbarPage>
+            <PublicLayout>
               <Contact />
-            </NavbarPage>
+            </PublicLayout>
           }
         />
 
-        {/* Private Routes - With Navbar, Protected by authentication */}
-        <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
+        {/* Student Routes - Nested under /student, restricted to Student (and Admin) */}
+        <Route path="/student" element={<PrivateRoute allowedRoles={["Student", "Admin"]} />}>
           <Route
-            path="/student/dashboard"
+            index
             element={
-              <NavbarPage>
+              <PrivateLayout>
                 <Dashboard />
-              </NavbarPage>
+              </PrivateLayout>
             }
           />
           <Route
-            path="/student/profile"
+            path="profile"
             element={
-              <NavbarPage>
+              <PrivateLayout>
                 <Profile />
-              </NavbarPage>
+              </PrivateLayout>
+            }
+          />
+          <Route
+            path="my-courses"
+            element={
+              <PrivateLayout>
+                <Courses isPrivate={true} />
+              </PrivateLayout>
             }
           />
         </Route>
 
-        {/* Role-restricted Routes for Educator */}
-        <Route element={<ProtectedRoute allowedRoles={["educator"]} />}>
+        {/* Educator Routes - Nested under /educator, restricted to Educator (and Admin) */}
+        <Route path="/educator" element={<PrivateRoute allowedRoles={["Educator", "Admin"]} />}>
           <Route
-            path="/educator"
+            index
             element={
-              <NavbarPage>
+              <PrivateLayout>
                 <EducatorDashboard />
-              </NavbarPage>
+              </PrivateLayout>
             }
           />
-          <Route
-            path="/educator/courses"
-            element={
-              <NavbarPage>
-                <EducatorCourses />
-              </NavbarPage>
-            }
-          />
-          {/* <Route
-            path="/educator/sales"
-            element={
-              <NavbarPage>
-                <EducatorDashboard />
-              </NavbarPage>
-            }
-          /> */}
-          {/* Add more educator routes as needed */}
+          {/* Add more educator-specific sub-routes here as needed, e.g., <Route path="courses" ... /> */}
         </Route>
 
-        {/* Role-restricted Routes for Admin */}
-        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+        {/* Admin Routes - Nested under /admin, restricted to Admin only */}
+        <Route path="/admin" element={<PrivateRoute allowedRoles={["Admin"]} />}>
           <Route
-            path="/admin"
+            index
             element={
-              <NavbarPage>
+              <PrivateLayout>
                 <AdminDashboard />
-              </NavbarPage>
+              </PrivateLayout>
             }
           />
-          {/* Add more admin routes as needed */}
+          {/* Add more admin-specific sub-routes here as needed */}
         </Route>
 
         {/* 404 Route */}
         <Route
           path="*"
           element={
-            <WithoutNavbarPage>
+            <PublicLayout>
               <NotFound />
-            </WithoutNavbarPage>
+            </PublicLayout>
           }
         />
       </Routes>

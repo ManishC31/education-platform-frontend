@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import axios from "axios";
+import API_BASE_URL from "../config/backend";
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -23,6 +25,13 @@ const Login: React.FC = () => {
       setErrors((prev) => ({
         ...prev,
         [name]: undefined,
+      }));
+    }
+    // Clear general error when user starts typing
+    if (errors.general) {
+      setErrors((prev) => ({
+        ...prev,
+        general: undefined,
       }));
     }
   };
@@ -56,24 +65,34 @@ const Login: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual login logic here
-      console.log("Login attempt:", formData);
+      const response = await axios.post(`${API_BASE_URL}/auth/login`, formData);
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Login user with context
-      login({
-        email: formData.email,
-        name: formData.email.split("@")[0],
-        id: Date.now().toString(),
-      });
-
+      if (response?.data?.success) {
+        login({
+          email: response.data.data.user.email,
+          name: `${response.data.data.user.firstname} ${response.data.data.user.lastname}`,
+          id: response.data.data.user.id,
+          role: response.data.data.user?.role,
+        });
+        navigate("/");
+      }
       // Navigate to dashboard after successful login
-      navigate("/dashboard");
     } catch (error) {
       console.error("Login failed:", error);
-      // Handle login error (show toast notification, etc.)
+
+      // Handle axios error properly
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || "Login failed. Please try again.";
+
+        console.log("err message:", errorMessage);
+        // Set specific field errors if provided by the backend
+        if (error.response?.data?.errors) {
+          setErrors({ general: error.response.data.errors });
+        } else {
+          // Set a general error message
+          setErrors({ general: errorMessage });
+        }
+      }
     } finally {
       setIsLoading(false);
     }
@@ -198,6 +217,22 @@ const Login: React.FC = () => {
                   Forgot password?
                 </a>
               </div>
+
+              {/* General Error Message */}
+              {errors.general && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
+                  <div className="flex items-center justify-center gap-2">
+                    <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <p className="text-sm text-red-600 text-center font-medium">{errors.general}</p>
+                  </div>
+                </div>
+              )}
 
               {/* Submit Button */}
               <button

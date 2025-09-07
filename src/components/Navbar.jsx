@@ -1,11 +1,28 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, NavLink } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import axios from "axios";
+import API_BASE_URL from "../config/backend";
+import { toast } from "react-toastify";
 
 const NavbarComponent = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+
+  const handleLogoutUser = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/auth/logout`);
+      if (response?.data?.success) {
+        logout();
+        navigate("/login");
+      } else {
+        toast.error("Failed to logout user!");
+      }
+    } catch (error) {
+      toast.error("Failed to logout user!");
+    }
+  };
 
   return (
     <nav className="bg-white shadow-lg border-b border-gray-200">
@@ -34,34 +51,59 @@ const NavbarComponent = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              <Link
+              <NavLink
                 to="/"
-                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-gray-50 relative group"
+                end
+                className={({ isActive }) =>
+                  `px-3 py-2 rounded-md text-sm font-medium relative group transition-all duration-300 
+    ${isActive ? "text-blue-600 font-semibold" : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"}`
+                }
               >
                 Home
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
-              </Link>
-              <Link
+                <span
+                  className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full 
+    group-[.active]:w-full"
+                ></span>
+              </NavLink>
+              <NavLink
                 to="/courses"
-                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-gray-50 relative group"
+                className={({ isActive }) =>
+                  `px-3 py-2 rounded-md text-sm font-medium relative group transition-all duration-300 
+    ${isActive ? "text-blue-600 font-semibold" : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"}`
+                }
               >
                 Courses
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
-              </Link>
-              <Link
+                <span
+                  className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full 
+    group-[.active]:w-full"
+                ></span>
+              </NavLink>
+              <NavLink
                 to="/about"
-                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-gray-50 relative group"
+                className={({ isActive }) =>
+                  `px-3 py-2 rounded-md text-sm font-medium relative group transition-all duration-300 
+    ${isActive ? "text-blue-600 font-semibold" : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"}`
+                }
               >
                 About
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
-              </Link>
-              <Link
+                <span
+                  className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full 
+    group-[.active]:w-full"
+                ></span>
+              </NavLink>
+              <NavLink
                 to="/contact"
-                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-gray-50 relative group"
+                className={({ isActive }) =>
+                  `px-3 py-2 rounded-md text-sm font-medium relative group transition-all duration-300 
+    ${isActive ? "text-blue-600 font-semibold" : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"}`
+                }
               >
                 Contact
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
-              </Link>
+                <span
+                  className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full 
+    group-[.active]:w-full"
+                ></span>
+              </NavLink>
             </div>
           </div>
 
@@ -177,8 +219,66 @@ const NavbarComponent = () => {
                     </div>
 
                     <div className="space-y-1">
+                      {/* Role-based dashboard links */}
+                      {user?.role?.toLowerCase() === "student" && (
+                        <Link
+                          to="/student/dashboard"
+                          className="flex items-center space-x-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-lg transition-all duration-200 group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors duration-200">
+                            <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                              />
+                            </svg>
+                          </div>
+                          <span className="font-medium">Student Dashboard</span>
+                        </Link>
+                      )}
+
+                      {user?.role?.toLowerCase() === "educator" && (
+                        <Link
+                          to="/educator/dashboard"
+                          className="flex items-center space-x-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all duration-200 group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-200">
+                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                              />
+                            </svg>
+                          </div>
+                          <span className="font-medium">Educator Dashboard</span>
+                        </Link>
+                      )}
+
+                      {user?.role?.toLowerCase() === "admin" && (
+                        <Link
+                          to="/admin/dashboard"
+                          className="flex items-center space-x-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-lg transition-all duration-200 group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors duration-200">
+                            <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                              />
+                            </svg>
+                          </div>
+                          <span className="font-medium">Admin Dashboard</span>
+                        </Link>
+                      )}
+
                       <Link
-                        to="/profile"
+                        to={user?.role?.toLowerCase() === "student" ? "/student/profile" : "/profile"}
                         className="flex items-center space-x-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all duration-200 group"
                       >
                         <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-200">
@@ -192,23 +292,6 @@ const NavbarComponent = () => {
                           </svg>
                         </div>
                         <span className="font-medium">Profile</span>
-                      </Link>
-
-                      <Link
-                        to="/dashboard"
-                        className="flex items-center space-x-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-lg transition-all duration-200 group"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors duration-200">
-                          <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                            />
-                          </svg>
-                        </div>
-                        <span className="font-medium">Dashboard</span>
                       </Link>
 
                       <Link
@@ -233,10 +316,7 @@ const NavbarComponent = () => {
                     <hr className="my-3 border-gray-200" />
 
                     <button
-                      onClick={() => {
-                        logout();
-                        navigate("/login");
-                      }}
+                      onClick={() => handleLogoutUser()}
                       className="w-full flex items-center space-x-3 px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 group"
                     >
                       <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center group-hover:bg-red-200 transition-colors duration-200">
