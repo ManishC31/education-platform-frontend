@@ -8,7 +8,7 @@ import Courses from "./pages/Courses.jsx";
 import About from "./pages/About.jsx";
 import Contact from "./pages/Contact.jsx";
 import NotFound from "./pages/NotFound.jsx";
-import CoursePage from "./pages/Course.jsx";
+// import CoursePage from "./pages/Course.jsx";
 import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
 import Dashboard from "./pages/Dashboard.jsx";
@@ -35,7 +35,7 @@ const router = createBrowserRouter([
         children: [
           { path: "dashboard", element: <Dashboard /> },
           { path: "profile", element: <Profile /> },
-          { path: "course/:id", element: <CoursePage /> },
+          // { path: "course/:id", element: <CoursePage /> },
         ],
       },
       {
