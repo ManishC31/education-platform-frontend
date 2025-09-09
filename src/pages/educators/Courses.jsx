@@ -1,9 +1,5 @@
 const EducatorCourses = () => {
-  return (
-    <div>
-      <h1>Educator Courses List</h1>
-    </div>
-  );
+  return <div>Educator Courses</div>;
 };
 
 export default EducatorCourses;

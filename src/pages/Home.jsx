@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
@@ -10,7 +9,7 @@ const Home = () => {
       instructor: "Sarah Johnson",
       rating: 4.8,
       students: 12450,
-      price: "$89.99",
+      price: "₹89.99",
       image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=250&fit=crop",
       category: "Web Development",
     },
@@ -20,7 +19,7 @@ const Home = () => {
       instructor: "Michael Chen",
       rating: 4.9,
       students: 18920,
-      price: "$79.99",
+      price: "₹79.99",
       image: "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=400&h=250&fit=crop",
       category: "Data Science",
     },
@@ -30,7 +29,7 @@ const Home = () => {
       instructor: "Dr. Emily Rodriguez",
       rating: 4.7,
       students: 15680,
-      price: "$99.99",
+      price: "₹99.99",
       image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=250&fit=crop",
       category: "Artificial Intelligence",
     },
@@ -40,7 +39,7 @@ const Home = () => {
       instructor: "Alex Thompson",
       rating: 4.6,
       students: 8920,
-      price: "$69.99",
+      price: "₹69.99",
       image: "https://images.unsplash.com/photo-1605745341112-85968b19335b?w=400&h=250&fit=crop",
       category: "DevOps",
     },
